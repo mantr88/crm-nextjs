@@ -8,22 +8,18 @@ import MagicButton from '@/app/components/magic-button';
 
 export interface PageProps {}
 
+export interface ISalesData {
+  companyId: number;
+  companyTitle: string;
+  sold: number;
+  income: number;
+}
+
 export default async function Page({}: PageProps) {
-  const data = await new Promise((res) => {
-    setTimeout(() => {
-      res(getSummarySales());
-    }, 4000);
-  });
+  const data: Promise<ISalesData[]> = getSummarySales();
 
   return (
-    <DashboardCard
-      label={
-        <>
-          Sales details
-          <MagicButton />
-        </>
-      }
-    >
+    <DashboardCard label="Sales details">
       <SummaryTable
         headers={
           <>
@@ -33,13 +29,15 @@ export default async function Page({}: PageProps) {
           </>
         }
       >
-        {data.map(({ companyId, companyTitle, sold, income }) => (
-          <tr key={companyId}>
-            <SummaryTableCell>{companyTitle}</SummaryTableCell>
-            <SummaryTableCell align="center">{sold}</SummaryTableCell>
-            <SummaryTableCell align="center">{`$${income}`}</SummaryTableCell>
-          </tr>
-        ))}
+        {(await data).map(
+          ({ companyId, companyTitle, sold, income }: ISalesData) => (
+            <tr key={companyId}>
+              <SummaryTableCell>{companyTitle}</SummaryTableCell>
+              <SummaryTableCell align="center">{sold}</SummaryTableCell>
+              <SummaryTableCell align="center">{`$${income}`}</SummaryTableCell>
+            </tr>
+          ),
+        )}
       </SummaryTable>
     </DashboardCard>
   );
